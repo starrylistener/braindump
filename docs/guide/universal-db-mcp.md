@@ -4,6 +4,29 @@
 
 ---
 
+## 关于本项目
+
+**Tarzan Mes - Universal DB MCP** 是基于开源项目 [universal-db-mcp](https://github.com/Anarkh-Lee/universal-db-mcp) 的**定制化开发版本**。
+
+在原版强大的数据库连接能力之上，我们针对 **Hzero 平台** 的业务场景进行了深度定制，新增了 `insert_exception_data` 工具，用于错误码及多语言提示信息的自动化维护。
+
+**致谢友链：**
+- 原版仓库：[https://github.com/Anarkh-Lee/universal-db-mcp](https://github.com/Anarkh-Lee/universal-db-mcp)
+- 定制仓库：[https://github.com/starrylistener/universal-db-mcp-mes](https://github.com/starrylistener/universal-db-mcp-mes)
+
+**定制版 vs 原版的差异：**
+
+| 功能 | 原版 | 定制版 (Tarzan Mes) |
+|------|------|---------------------|
+| 数据库连接 | 17 种数据库 | 17 种数据库 |
+| MCP 工具 | 9 个 | **10 个**（新增 `insert_exception_data`） |
+| Hzero 错误码维护 | 不支持 | **支持** |
+| 多语言错误信息 | 不支持 | **支持** |
+
+---
+
+---
+
 ## 目录
 
 - [一、简介与适用场景](#一简介与适用场景)
@@ -13,11 +36,12 @@
 - [五、HTTP API 模式（服务化部署）](#五http-api-模式服务化部署)
 - [六、MCP over HTTP（SSE / Streamable HTTP）](#六mcp-over-httpsse--streamable-http)
 - [七、权限与安全配置](#七权限与安全配置)
-- [八、支持的数据库及连接示例](#八支持的数据库及连接示例)
-- [九、环境变量完整参考](#九环境变量完整参考)
-- [十、命令行参数完整参考](#十命令行参数完整参考)
-- [十一、故障排查](#十一故障排查)
-- [十二、卸载与清理](#十二卸载与清理)
+- [八、定制功能：Hzero 错误码维护](#八定制功能hzero-错误码维护tarzan-mes-新增)
+- [九、支持的数据库及连接示例](#九支持的数据库及连接示例)
+- [十、环境变量完整参考](#十环境变量完整参考)
+- [十一、命令行参数完整参考](#十一命令行参数完整参考)
+- [十二、故障排查](#十二故障排查)
+- [十三、卸载与清理](#十三卸载与清理)
 
 ---
 
@@ -415,7 +439,125 @@ Content-Type: application/json
 
 ---
 
-## 八、支持的数据库及连接示例
+## 八、定制功能：Hzero 错误码维护（Tarzan Mes 新增）
+
+这是 **Tarzan Mes 定制版** 的核心扩展功能，用于向 Hzero 平台注册新的错误码及其多语言提示信息。
+
+### 8.1 功能概述
+
+当用户在对话中描述以下业务场景时，AI 会自动调用 `insert_exception_data` 工具：
+
+- "xxx 时报错 xxx"
+- "需要抛出一个错误"
+- "新增错误码"
+- "消息维护"
+
+### 8.2 专属 MCP 工具：`insert_exception_data`
+
+| 属性 | 说明 |
+|------|------|
+| **工具名** | `insert_exception_data` |
+| **所需权限** | `insert`（因此 `--permission-mode` 不能是 `safe`，至少 `readwrite`） |
+| **工作模式** | 黑盒接口，AI 只需传入业务参数，后台表映射、ID 生成、事务处理全部预配置完成 |
+
+**工作流程：**
+
+1. 用户描述业务报错场景
+2. AI 生成候选 `MESSAGE_CODE`（格式：`模块名.模块描述_递增编号`，如 `HME.WORKING_PART_NEW_044`）
+3. AI 展示候选编码和各语言翻译，**必须征得用户确认**后再调用工具
+4. 工具自动完成：
+   - 批量从 `mt_sys_sequence` 生成唯一 `MESSAGE_ID`（带 `FOR UPDATE` 锁防并发冲突）
+   - 向主表 `mt_error_message` 批量插入
+   - 向多语言表 `mt_error_message_tl` 批量插入
+   - 自动填充租户 ID、审计字段、初始标识
+   - 失败自动回滚事务
+
+### 8.3 配置参数
+
+**MCP stdio 配置示例：**
+
+```json
+{
+  "mcpServers": {
+    "hzero-db": {
+      "command": "universal-db-mcp-mes",
+      "args": [
+        "--type", "mysql",
+        "--host", "localhost",
+        "--port", "3306",
+        "--user", "root",
+        "--password", "your_password",
+        "--database", "hzero_platform",
+        "--permission-mode", "readwrite",
+        "--error-table", "mt_error_message",
+        "--error-tl-table", "mt_error_message_tl",
+        "--error-seq-name", "mt_error_message_s",
+        "--error-locales", "zh_CN,en_US",
+        "--error-seq-suffix", "001"
+      ]
+    }
+  }
+}
+```
+
+**关键参数说明：**
+
+| 参数 | 必填 | 默认值 | 说明 |
+|------|------|--------|------|
+| `--permission-mode` | 是 | `safe` | 必须是 `readwrite` 或 `full`，因为需要 `insert` 权限 |
+| `--error-table` | 是 | - | 错误码主表名（如 `mt_error_message`） |
+| `--error-tl-table` | 是 | - | 多语言表名（如 `mt_error_message_tl`） |
+| `--error-seq-name` | 否 | `mt_error_message_s` | 序列表中的 NAME 字段值 |
+| `--error-locales` | 否 | `zh_CN,en_US` | 支持的语言列表，逗号分隔 |
+| `--error-seq-suffix` | 否 | `001` | MESSAGE_ID 的后缀（如 `base*1000 + 001`） |
+| `--error-database` | 否 | - | 表所在的数据库 / schema |
+
+**环境变量配置（HTTP 模式）：**
+
+```env
+ERROR_TABLE=mt_error_message
+ERROR_TL_TABLE=mt_error_message_tl
+ERROR_SEQ_NAME=mt_error_message_s
+ERROR_SEQ_SUFFIX=001
+ERROR_LOCALES=zh_CN,en_US
+```
+
+### 8.4 HTTP API 调用
+
+```bash
+curl -X POST http://localhost:3000/api/insert-exception-data \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-secret-key" \
+  -d '{
+    "sessionId": "abc123",
+    "data": [
+      {
+        "MESSAGE_CODE": "HME.WORKING_PART_NEW_044",
+        "MESSAGE": ["连接超时", "Connection timeout"]
+      }
+    ]
+  }'
+```
+
+**多语言传入规则：**
+
+- `MESSAGE` 传字符串数组，长度必须等于 `--error-locales` 配置的语言数量
+- 数组顺序严格对应 `--error-locales` 的顺序
+- 示例：`--error-locales zh_CN,en_US` 时，`MESSAGE` 应为 `["连接超时", "Connection timeout"]`
+- 仅当用户明确表示"只用中文"或"所有语言相同"时，才可传单个字符串
+
+### 8.5 MESSAGE_CODE 生成规则
+
+- **格式**：`模块名.模块描述_递增编号`（全大写）
+- **示例**：`HME.WORKING_PART_NEW_044`
+  - `HME` = 模块名
+  - `WORKING_PART_NEW` = 模块描述（单词间下划线连接）
+  - `044` = 递增编号
+- AI 会根据业务上下文生成 2-3 个候选编码供用户选择
+
+---
+
+## 九、支持的数据库及连接示例
 
 ### 8.1 快速参考表
 
@@ -567,7 +709,7 @@ Content-Type: application/json
 
 ---
 
-## 九、环境变量完整参考
+## 十、环境变量完整参考
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
@@ -591,10 +733,17 @@ Content-Type: application/json
 | `DB_DATABASE` | - | 默认数据库名 |
 | `DB_FILE_PATH` | - | SQLite 数据库文件路径 |
 | `DB_AUTH_SOURCE` | `admin` | MongoDB 认证源 |
+| `ERROR_TABLE` | - | Hzero 错误码主表名 |
+| `ERROR_TL_TABLE` | - | Hzero 错误码多语言表名 |
+| `ERROR_SEQ_NAME` | `mt_error_message_s` | 序列表 NAME 值 |
+| `ERROR_SEQ_SUFFIX` | `001` | 序列 ID 后缀 |
+| `ERROR_LOCALES` | `zh_CN,en_US` | 支持的语言列表 |
+| `ERROR_DATABASE` | - | 错误信息表所在数据库 / schema |
+| `ERROR_MULTILANG` | `false` | 多语言开关 |
 
 ---
 
-## 十、命令行参数完整参考
+## 十一、命令行参数完整参考
 
 | 参数 | 简写 | 说明 | 示例 |
 |------|------|------|------|
@@ -610,19 +759,20 @@ Content-Type: application/json
 | `--version` | `-v` | 显示版本 | `--version` |
 | `--help` | `-h` | 显示帮助 | `--help` |
 
-**Hzero 定制参数：**
+**Hzero 错误码维护参数（定制版新增）：**
 
-| 参数 | 说明 |
-|------|------|
-| `--error-table` | 错误码主表名 |
-| `--error-tl-table` | 错误码多语言表名 |
-| `--error-seq-name` | 序列名 |
-| `--error-locales` | 支持的语言列表 |
-| `--error-seq-suffix` | 序列后缀 |
+| 参数 | 说明 | 默认值 | 示例 |
+|------|------|--------|------|
+| `--error-table` | 错误码主表名 | - | `--error-table mt_error_message` |
+| `--error-tl-table` | 错误码多语言表名 | - | `--error-tl-table mt_error_message_tl` |
+| `--error-seq-name` | 序列表 NAME 值 | `mt_error_message_s` | `--error-seq-name mt_error_message_s` |
+| `--error-seq-suffix` | 序列 ID 后缀 | `001` | `--error-seq-suffix 001` |
+| `--error-locales` | 支持的语言列表 | `zh_CN,en_US` | `--error-locales zh_CN,en_US,ja_JP` |
+| `--error-database` | 错误信息表所在数据库 | - | `--error-database hzero_platform` |
 
 ---
 
-## 十一、故障排查
+## 十二、故障排查
 
 ### Q1: 安装后命令找不到？
 
@@ -670,7 +820,7 @@ export PATH="$(npm bin -g):$PATH"
 
 ---
 
-## 十二、卸载与清理
+## 十三、卸载与清理
 
 ```bash
 # 卸载全局包
