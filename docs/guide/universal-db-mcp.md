@@ -37,19 +37,13 @@
 
 ## 安装方式
 
-1. **下载 .tgz 包**
-
-```bash
-curl -LO https://github.com/starrylistener/universal-db-mcp-mes/releases/download/mes-0.0.3/universal-db-mcp-mes-mes-0.0.3.tgz
-```
-
-2. **全局安装**
+1. **全局安装**
 
 ```bash
 npm install -g https://github.com/starrylistener/universal-db-mcp-mes/releases/download/mes-0.0.3/universal-db-mcp-mes-mes-0.0.3.tgz
 ```
 
-3. **验证安装**
+2. **验证安装**
 
 ```bash
 universal-db-mcp-mes --version
