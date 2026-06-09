@@ -59,7 +59,7 @@ export default defineConfig({
 
     // GitHub 仓库链接
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/your-username/your-repo' }
+      { icon: 'github', link: 'https://github.com/starrylistener/braindump' }
     ],
 
     // 页脚
@@ -70,7 +70,7 @@ export default defineConfig({
 
     // 编辑此页
     editLink: {
-      pattern: 'https://github.com/your-username/your-repo/edit/main/docs/:path',
+      pattern: 'https://github.com/starrylistener/braindump/edit/main/docs/:path',
       text: '在 GitHub 上编辑此页'
     },
 
