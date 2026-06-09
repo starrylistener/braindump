@@ -178,3 +178,50 @@ curl -X POST http://localhost:3000/api/insert-exception-data \
 - [universal-db-mcp 原版仓库](https://github.com/Anarkh-Lee/universal-db-mcp) — 原版功能完整文档
 - [定制版 README（中文）](https://github.com/starrylistener/universal-db-mcp-mes/blob/main/README.zh-CN.md)
 - [定制版仓库](https://github.com/starrylistener/universal-db-mcp-mes)
+
+---
+
+## 常见问题
+
+### Q: 安装时遇到 `better-sqlite3` 编译报错？
+
+由于 `better-sqlite3` 包含原生 C++ 模块，安装时需要本地编译环境。若预编译二进制包下载失败，会触发从源码编译，缺少环境则报错。
+
+**macOS 解决方案：**
+
+```bash
+# 安装 Xcode 命令行工具（如未安装）
+xcode-select --install
+
+# 如果已安装但路径异常，重置
+sudo xcode-select --reset
+```
+
+**Windows 解决方案：**
+
+以管理员身份运行 PowerShell，安装 windows-build-tools：
+
+```powershell
+npm install --global windows-build-tools
+```
+
+或使用 `npm` 的预构建包（无需编译）：
+
+```bash
+npm install -g better-sqlite3
+```
+
+**通用替代方案：**
+
+如果上述方法无效，可尝试使用官方预编译版本跳过编译：
+
+```bash
+npm install -g universal-db-mcp-mes --sqlite=3.45.0
+```
+
+或设置环境变量跳过源码编译：
+
+```bash
+export npm_config_build_from_source=false
+npm install -g universal-db-mcp-mes
+```
