@@ -89,6 +89,7 @@ universal-db-mcp-mes --help
 2. AI 生成候选 `MESSAGE_CODE`（格式：`模块名.模块描述_递增编号`，如 `HME.WORKING_PART_NEW_044`）
 3. AI 展示候选编码和各语言翻译，**必须征得用户确认**后再调用工具
 4. 工具自动完成：
+   - **全量查重**：先检查传入的 `MESSAGE_CODE` 是否已存在于数据库中，**存在则直接报错**，不会插入
    - 批量从 `mt_sys_sequence` 生成唯一 `MESSAGE_ID`（带 `FOR UPDATE` 锁防并发冲突）
    - 向主表 `mt_error_message` 批量插入
    - 向多语言表 `mt_error_message_tl` 批量插入
