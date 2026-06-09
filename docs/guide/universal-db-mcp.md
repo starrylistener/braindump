@@ -2,8 +2,6 @@
 
 > 本文档只介绍 **Tarzan Mes 定制版** 的增量功能。原版功能（数据库连接、查询、Schema 获取等）请参考 [universal-db-mcp 原版文档](https://github.com/Anarkh-Lee/universal-db-mcp)。
 
----
-
 ## 关于本项目
 
 **Tarzan Mes - Universal DB MCP** 是基于开源项目 [universal-db-mcp](https://github.com/Anarkh-Lee/universal-db-mcp) 的**定制化开发版本**。
@@ -20,20 +18,16 @@
 |------|------|---------------------|
 | 数据库连接 | 17 种数据库 | 17 种数据库 |
 | MCP 工具 | 9 个 | **10 个**（新增 `insert_exception_data`） |
-| Hzero 错误码维护 | 不支持 | **支持** |
+| Hzero 消息维护 | 不支持 | **支持** |
 | 多语言错误信息 | 不支持 | **支持** |
-
----
 
 ## 目录
 
 - [安装方式](#安装方式)
 - [新增 MCP 工具](#新增-mcp-工具)
-- [定制功能：Hzero 错误码维护](#定制功能hzero-错误码维护)
+- [定制功能：Hzero 消息维护](#定制功能hzero-消息维护)
 - [新增参数参考](#新增参数参考)
 - [相关文档](#相关文档)
-
----
 
 ## 安装方式
 
