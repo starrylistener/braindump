@@ -38,10 +38,10 @@ export default defineConfig({
     sidebar: {
       '/guide/': [
         {
-          text: 'Tarzan Mes - Universal DB MCP 使用指南',
+          text: '文档',
           collapsed: false,
           items: [
-            { text: 'Universal DB MCP', link: '/guide/universal-db-mcp' }
+            { text: 'Tarzan Mes - Universal DB MCP 使用指南', link: '/guide/universal-db-mcp' }
           ]
         }
       ]
