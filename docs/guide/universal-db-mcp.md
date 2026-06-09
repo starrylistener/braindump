@@ -64,9 +64,11 @@ universal-db-mcp-mes --help
 
 ---
 
-## 定制功能：Hzero 错误码维护
+## 定制功能：Hzero 消息维护
 
 这是 **Tarzan Mes 定制版** 的核心扩展功能。
+
+> 注：虽然底层表结构为消息表（`mt_error_message`），但目前 `insert_exception_data` 工具仅用于插入**错误信息**，即业务异常报错场景。
 
 ### 功能概述
 
