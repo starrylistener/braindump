@@ -46,7 +46,7 @@ curl -LO https://github.com/starrylistener/universal-db-mcp-mes/releases/downloa
 2. **全局安装**
 
 ```bash
-npm install -g ./universal-db-mcp-mes-mes-0.0.3.tgz
+npm install -g https://github.com/starrylistener/universal-db-mcp-mes/releases/download/mes-0.0.3/universal-db-mcp-mes-mes-0.0.3.tgz
 ```
 
 3. **验证安装**
@@ -78,10 +78,7 @@ universal-db-mcp-mes --help
 
 当用户在对话中描述以下业务场景时，AI 会自动调用 `insert_exception_data` 工具：
 
-- "xxx 时报错 xxx"
-- "需要抛出一个错误"
-- "新增错误码"
-- "消息维护"
+- "总结本次新增功能点中错误信息，并调用`insert_exception_data`进行插入"
 
 ### 工作流程
 
