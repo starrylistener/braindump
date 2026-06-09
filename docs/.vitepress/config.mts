@@ -6,6 +6,9 @@ export default defineConfig({
   title: '知识库',
   description: '个人与团队的知识沉淀空间',
 
+  // 部署基础路径（GitHub Pages 项目站点需要）
+  base: '/braindump/',
+
   // 构建输出目录（GitHub Actions 部署用）
   outDir: '../dist',
 
