@@ -1,4 +1,4 @@
-# Universal DB MCP 完整使用指南
+# Tarzan Mes - Universal DB MCP 完整使用指南
 
 > 本指南面向实际使用者，涵盖从安装到生产的全链路配置与最佳实践。
 
