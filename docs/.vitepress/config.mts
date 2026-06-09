@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   // 站点元数据
   lang: 'zh-CN',
-  title: 'Tarzan Mes 知识库',
+  title: 'Starry Listener 知识库',
   description: '个人与团队的知识沉淀空间',
 
   // 部署基础路径（GitHub Pages 项目站点需要）

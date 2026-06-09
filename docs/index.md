@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "Tarzan Mes 知识库"
+  name: "Starry Listener 知识库"
   text: "沉淀与分享"
   tagline: 记录学习、实践与思考的点滴，构建个人与团队的知识体系
   image:
