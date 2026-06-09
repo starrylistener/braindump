@@ -31,28 +31,17 @@ export default defineConfig({
     // 导航栏
     nav: [
       { text: '首页', link: '/' },
-      { text: '指南', link: '/guide/getting-started', activeMatch: '/guide/' },
-      { text: '笔记', link: '/notes/frontend', activeMatch: '/notes/' }
+      { text: '文档', link: '/guide/universal-db-mcp', activeMatch: '/guide/' }
     ],
 
     // 侧边栏（按路径独立配置）
     sidebar: {
       '/guide/': [
         {
-          text: '开始',
+          text: '文档',
           collapsed: false,
           items: [
-            { text: '快速开始', link: '/guide/getting-started' },
-            { text: '写作规范', link: '/guide/writing' }
-          ]
-        }
-      ],
-      '/notes/': [
-        {
-          text: '技术笔记',
-          collapsed: false,
-          items: [
-            { text: 'Universal DB MCP', link: '/notes/universal-db-mcp' }
+            { text: 'Universal DB MCP', link: '/guide/universal-db-mcp' }
           ]
         }
       ]
