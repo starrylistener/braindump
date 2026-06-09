@@ -53,7 +53,8 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: '前端', link: '/notes/frontend' },
-            { text: '后端', link: '/notes/backend' }
+            { text: '后端', link: '/notes/backend' },
+            { text: 'Universal DB MCP', link: '/notes/universal-db-mcp' }
           ]
         }
       ]
