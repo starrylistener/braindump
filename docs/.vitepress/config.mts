@@ -32,8 +32,7 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '指南', link: '/guide/getting-started', activeMatch: '/guide/' },
-      { text: '笔记', link: '/notes/frontend', activeMatch: '/notes/' },
-      { text: 'FAQ', link: '/faq' }
+      { text: '笔记', link: '/notes/frontend', activeMatch: '/notes/' }
     ],
 
     // 侧边栏（按路径独立配置）
