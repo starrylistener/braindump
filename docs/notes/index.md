@@ -4,6 +4,4 @@
 
 ## 分类
 
-- [前端](frontend)
-- [后端](backend)
 - [Universal DB MCP](universal-db-mcp)
